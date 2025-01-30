@@ -1,13 +1,13 @@
 "use client"
 
 import React from 'react'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import Logo from '../../../public/img/blustyles_logo_transparent.png'
 import { Twirl as Hamburger } from 'hamburger-react'
 import Drawer from '@mui/material/Drawer';
 import DrawerList from './DrawerList'
-import { SlideProps } from '@mui/material'
+
 
 
 const slideProps = {
