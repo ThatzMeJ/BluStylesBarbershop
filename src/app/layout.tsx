@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";
+import { config } from '@fortawesome/fontawesome-svg-core'
+import '@fortawesome/fontawesome-svg-core/styles.css'
+import NavBar from "@/app/components/layout/NavBar";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,6 +15,9 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// Prevent Font Awesome from adding its CSS since we did it manually above
+config.autoAddCss = false
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,7 +34,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
+        <NavBar />
         {children}
       </body>
     </html>

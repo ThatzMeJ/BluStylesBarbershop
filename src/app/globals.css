@@ -1,21 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Splash&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Aboreto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
+  /* Base colors */
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Brand colors */
+  --primary: #051926;
+  --primary-light: #082942;
+  --primary-transparent: #05192636;
+  --accent: #BAD1FF;
+  --accent-secondary: #5EB1FA;
+  
+  /* UI colors */
+  --text-muted: #999999;
+  --text-body: #4a5568;
+  --border-light: #e0e7ff;
+  --bg-light: #f5f8ff;
+  --icon-color: #4f86e7;
+  --overlay-dark: #001528;
+  --card-dark: #1A2937;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --radial-gradient-background: 250, 250, 250;
+    --solid-color-background: 15, 15, 15;
+    --overlay-color: 255, 255, 255;
   }
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: white;
+  font-family: Geist, sans-serif;
+}
+
+.radial-gradient {
+  background: radial-gradient(
+          circle at 50% 0%,
+          rgba(var(--radial-gradient-background), 0.05) 0%,
+          transparent 60%
+      )
+      rgba(var(--solid-color-background), 1);
+}
+
+.linear-mask {
+  mask-image: linear-gradient(
+      -75deg,
+      white calc(var(--x) + 20%),
+      transparent calc(var(--x) + 30%),
+      white calc(var(--x) + 100%)
+  );
+  -webkit-mask-image: linear-gradient(
+      -75deg,
+      white calc(var(--x) + 20%),
+      transparent calc(var(--x) + 30%),
+      white calc(var(--x) + 100%)
+  );
+}
+
+.linear-overlay {
+  background-image: linear-gradient(
+      -75deg,
+      rgba(var(--overlay-color), 0.1) calc(var(--x) + 20%),
+      rgba(var(--overlay-color), 0.5) calc(var(--x) + 25%),
+      rgba(var(--overlay-color), 0.1) calc(var(--x) + 100%)
+  );
+  mask:
+      linear-gradient(black, black) content-box,
+      linear-gradient(black, black);
+  -webkit-mask:
+      linear-gradient(black, black) content-box,
+      linear-gradient(black, black);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+.hero-image-overlay {
+  background-image: linear-gradient(var(--primary), var(--primary-transparent) 35% 50%, var(--primary) 103%);
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.bg-blur {
+  background: rgba(255, 255, 255, 0.01);  /* Very slight white background */
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);  /* For Safari support */
+  width: 100%;
+}
+
+.zoom-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+
+.zoom-wrapper img {
+  transition: all 0.3s ease-in-out;
+  object-fit: cover;
+  height: 100%;
+}
+
+.zoom-wrapper:hover img {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
+
+.service-overlay {
+  background: linear-gradient(var(--primary), #05192699 35% 50%, var(--primary) 103%);
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }

@@ -10,6 +10,11 @@
 !.yarn/releases
 !.yarn/versions
 
+# History folder
+/history/
+history/**/*
+*.history
+
 # testing
 /coverage
 
