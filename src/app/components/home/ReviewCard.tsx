@@ -11,11 +11,11 @@ import { Rating } from '@smastrom/react-rating'
 
 const ReviewCard = () => {
   // This ref will now measure the entire list
-  const [listRef, listBounds] = useMeasure();
-  
+  const [listRef] = useMeasure();
+
   // Ref for the duplicated list to calculate total height
   const [duplicateListRef, duplicateListBounds] = useMeasure();
-  
+
   const yTranslation = useMotionValue(0);
   const allItemsRef = useRef([]);
 
@@ -23,7 +23,7 @@ const ReviewCard = () => {
     if (!duplicateListBounds.height) return;
 
     const totalHeight = -duplicateListBounds.height / 2; // Only scroll through one set
-    
+
     const controls = animate(yTranslation, [0, totalHeight], {
       ease: 'linear',
       duration: 60, // Adjusted for smoother scrolling
@@ -54,14 +54,14 @@ const ReviewCard = () => {
               <Image src={FaQuoteLeft} alt="testimonial" width={25} height={25} />
 
               <p>{item.review}</p>
-              
+
               <div className="flex items-center gap-2 w-full mt-auto">
-                <Image 
-                  src={item.image} 
-                  alt="testimonial" 
-                  width={60} 
-                  height={60} 
-                  className="rounded-full object-cover" 
+                <Image
+                  src={item.image}
+                  alt="testimonial"
+                  width={60}
+                  height={60}
+                  className="rounded-full object-cover"
                 />
                 <div>
                   <h4 className="font-semibold">{item.name}</h4>

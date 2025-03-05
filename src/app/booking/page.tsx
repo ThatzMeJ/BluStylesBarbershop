@@ -34,15 +34,25 @@ const Page = () => {
     setSelectedService(service);
     setStep(3);
   };
-  
+
   //Passed to ProfessionalSelection Component
   const handleProfessionalSelect = (id: number) => {
     setSelectedProfessional(id);
+    setStep(4);
   }
 
+  // Define a proper type for the form data
+  interface BookingFormData {
+    date?: string;
+    time?: string;
+    name?: string;
+    email?: string;
+    phone?: string;
+    notes?: string;
+    [key: string]: any; // For any additional fields
+  }
 
-
-  const handleBookingSubmit = async (formData: any) => {
+  const handleBookingSubmit = async (formData: BookingFormData) => {
     try {
       const response = await fetch('/api/bookings', {
         method: 'POST',
@@ -158,7 +168,14 @@ const Page = () => {
                 <h2 className="text-2xl font-bold mb-4">Step 4: Confirmation</h2>
                 <p className="mb-4">This is a placeholder for step 4 content.</p>
                 <button
-                  onClick={() => console.log("Booking completed!")}
+                  onClick={() => {
+                    const dummyFormData: BookingFormData = {
+                      date: new Date().toISOString().split('T')[0],
+                      time: '10:00',
+                      name: 'Test User',
+                    };
+                    handleBookingSubmit(dummyFormData);
+                  }}
                   className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-md"
                 >
                   Complete Booking

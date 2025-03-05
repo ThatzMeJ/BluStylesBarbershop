@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import { Users } from 'lucide-react';
 import useWindowDimensions from '@/app/hooks/WindowDimensions';
 
@@ -31,6 +30,13 @@ const professionals = [
   }
 ]
 
+interface Professional {
+  id: number;
+  name: string;
+  image: React.ReactNode;
+  description: string;
+}
+
 interface ProfessionalSelectionProps {
   selectedProfessional: number | null;
   onProfessionalSelect: (id: number) => void;
@@ -48,7 +54,7 @@ const ProfessionalSelection = ({ onProfessionalSelect, selectedProfessional }: P
 
       {/* Services Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-8 justify-center max-w-2xl ">
-        {professionals.map((service: any) => (
+        {professionals.map((service: Professional) => (
           <motion.div
             key={service.id}
             layout

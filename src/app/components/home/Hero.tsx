@@ -1,11 +1,8 @@
 'use client'
-import { motion } from 'framer-motion'
 import React from 'react'
 import Image from 'next/image'
 import heroImage from "../../../../public/img/blustyles_cut_01.jpg"
 import HeroButton from './HeroButton'
-
-
 
 const Hero = () => {
   return (

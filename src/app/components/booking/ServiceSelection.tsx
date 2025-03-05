@@ -2,13 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, TrendingUp, Star, Scissors, Search } from 'lucide-react';
 
-// In the child component's interface/type
-interface ServiceSelectionProps {
-  onServiceSelect: (service: object) => void;
+interface Service {
+    id: number;
+    name: string;
+    description: string;
+    time: number;
+    price: number;
+    popular?: boolean;
+    specialty?: boolean;
+    [key: string]: any; // For any additional properties
 }
 
-const ServiceSelection = ({ onServiceSelect } : ServiceSelectionProps) => {
-    const [services, setServices] = useState([]);
+// In the child component's interface/type
+interface ServiceSelectionProps {
+    onServiceSelect: (service: object) => void;
+}
+
+const ServiceSelection = ({ onServiceSelect }: ServiceSelectionProps) => {
+    const [services, setServices] = useState<Service[]>([]);
     const [activeFilter, setActiveFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -26,7 +37,7 @@ const ServiceSelection = ({ onServiceSelect } : ServiceSelectionProps) => {
         { id: 'specialty', name: 'Specialty', icon: Star },
     ];
 
-    const filteredServices = services.filter((service : any) => {
+    const filteredServices = services.filter((service: Service) => {
         if (searchTerm) {
             return service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 service.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -70,8 +81,8 @@ const ServiceSelection = ({ onServiceSelect } : ServiceSelectionProps) => {
                         key={id}
                         onClick={() => setActiveFilter(id)}
                         className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-200 ${activeFilter === id
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                             }`}
                     >
                         <Icon size={18} />
@@ -82,7 +93,7 @@ const ServiceSelection = ({ onServiceSelect } : ServiceSelectionProps) => {
 
             {/* Services Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredServices.map((service : any) => (
+                {filteredServices.map((service: Service) => (
                     <motion.div
                         key={service.id}
                         layout
