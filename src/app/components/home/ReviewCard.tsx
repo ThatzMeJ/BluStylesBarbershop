@@ -1,81 +1,79 @@
 'use client';
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
-import FaQuoteLeft from '../../../../public/img/63515e0705695e64229e5eb7_quotes-fill.svg'
-import userImage from '../../../../public/img/63515e0705695ee4bb9e5ec5_Screenshot_9.jpg'
-import useMeasure from 'react-use-measure'
-import { useMotionValue, animate } from 'framer-motion'
-import { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react';
+import { motion, useMotionValue, animate } from 'framer-motion';
+import Image from 'next/image';
+import FaQuoteLeft from '../../../../public/img/63515e0705695e64229e5eb7_quotes-fill.svg';
+import useMeasure from 'react-use-measure';
+import { userReviews1 } from '../../../../constant/userReviews';
+import { Rating } from '@smastrom/react-rating'
 
-const items = [
-  1, 2, 3, 4, 5, 6, 7, 8
-]
 
 const ReviewCard = () => {
-
-  // This ref will now measure one item's full height including margins
-  const [itemRef, itemBounds] = useMeasure();
-  // This ref measures the entire list
+  // This ref will now measure the entire list
   const [listRef, listBounds] = useMeasure();
-
+  
+  // Ref for the duplicated list to calculate total height
+  const [duplicateListRef, duplicateListBounds] = useMeasure();
+  
   const yTranslation = useMotionValue(0);
+  const allItemsRef = useRef([]);
 
   useEffect(() => {
-    if (!itemBounds.height || !listBounds.height) return;
+    if (!duplicateListBounds.height) return;
 
-    // Calculate the height of one complete set of items
-    // const finalPos = -(items.length * itemBounds.height);
-    const finalPos = -765;
-    console.log('Single item height:', itemBounds.height);
-    console.log('Total scroll distance:', finalPos);
-
-    const controls = animate(yTranslation, [0, finalPos], {
+    const totalHeight = -duplicateListBounds.height / 2; // Only scroll through one set
+    
+    const controls = animate(yTranslation, [0, totalHeight], {
       ease: 'linear',
-      duration: 15,
+      duration: 60, // Adjusted for smoother scrolling
       repeat: Infinity,
       repeatType: 'loop',
       repeatDelay: 0,
-    })
+    });
 
     return controls.stop;
-  }, [yTranslation, itemBounds.height, listBounds.height]);
+  }, [yTranslation, duplicateListBounds.height]);
 
   return (
-    <motion.div
-    className='flex flex-col items-center h-full w-fit '
-    ref={listRef}
-    style={{
-      y: yTranslation,
-    }}
-  >
-    {[...items, ...items].map((item, index) => (
-
-      <div
-        // Only measure the first item
-        ref={index === 0 ? itemRef : undefined}
-        key={`${item}-${index}`}
-        className="bg-white flex-1 max-w-64 min-h-64 rounded-lg flex flex-col items-start justify-start my-2 overflow-hidden text-black p-5 gap-4"
+    <div className="overflow-hidden h-full">
+      <motion.div
+        className="flex flex-col items-center w-fit"
+        ref={listRef}
+        style={{
+          y: yTranslation,
+        }}
       >
-        <Image src={FaQuoteLeft} alt='testimonial' width={25} height={25} />
+        <div ref={duplicateListRef}>
+          {[...userReviews1, ...userReviews1].map((item, index) => (
+            <div
+              ref={(el) => (allItemsRef.current[index] = el)}
+              key={`${item.name}-${index}`}
+              className="bg-white flex-1 max-w-64 rounded-lg flex flex-col items-start justify-start my-2 text-black p-5 gap-4"
+            >
+              <Image src={FaQuoteLeft} alt="testimonial" width={25} height={25} />
 
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.
-        </p>
-
-        <div className='flex items-center gap-2  w-full mt-auto'>
-          <Image src={userImage} alt='testimonial'  className='rounded-full object-cover max-w-[60px] max-h-[60px]' />
-          <div>
-            <h4 className='font-semibold'>John Doe</h4>
-            <p className='text-[var(--text-muted)] text-sm'>CEO at Company</p>
-          </div>
+              <p>{item.review}</p>
+              
+              <div className="flex items-center gap-2 w-full mt-auto">
+                <Image 
+                  src={item.image} 
+                  alt="testimonial" 
+                  width={60} 
+                  height={60} 
+                  className="rounded-full object-cover" 
+                />
+                <div>
+                  <h4 className="font-semibold">{item.name}</h4>
+                  <Rating style={{ maxWidth: 80 }} value={5} readOnly />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
+      </motion.div>
+    </div>
+  );
+};
 
-    ))}
-  </motion.div>
-  )
-}
-
-export default ReviewCard
+export default ReviewCard;

@@ -8,6 +8,7 @@ import Hamburger from 'hamburger-react'
 import useWindowDimensions from '../../hooks/WindowDimensions'
 import { AnimatePresence, motion } from 'framer-motion'
 import MobileMenu from '../home/MobileMenu'
+import { usePathname } from 'next/navigation';
 
 const navItems = [
   {
@@ -36,10 +37,17 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const { width } = useWindowDimensions()
   const belowMd: boolean = width < 768
+  const pathname = usePathname();
+
+ // Define routes where you want to show the navbar
+ const showNavbarRoutes = ['/', '/services'];
+ const shouldShowNavbar = showNavbarRoutes.includes(pathname);
+  
 
   return (
     <>
-      <header className='sticky top-0 z-50'>
+      {shouldShowNavbar && (
+        <header className='sticky top-0 z-50'>
         <div className='p-5 md:px-10 '>
           <div className='container mx-auto fixed top-0 left-0 right-0  bg-blur'>
             <div className='flex justify-between items-center '>
@@ -91,7 +99,8 @@ const NavBar = () => {
         <AnimatePresence mode='wait'>
           {isOpen && <MobileMenu setIsOpen={setIsOpen} isOpen={isOpen} />}
         </AnimatePresence>
-      </header>
+        </header>
+      )}
     </>
   )
 }

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReviewCard from './ReviewCard';
-import useWindowDimensions from '@/app/hooks/WindowDimensions';
+import useWindowDimensions from '../../hooks/WindowDimensions';
 
 const Testimonial = () => {
   const { width } = useWindowDimensions();
