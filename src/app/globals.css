@@ -90,7 +90,6 @@ body {
   background-image: linear-gradient(var(--primary), var(--primary-transparent) 35% 50%, var(--primary) 103%);
   position: absolute;
   inset: 0;
-  z-index: 1;
 }
 
 .bg-blur {
@@ -121,4 +120,77 @@ body {
   position: absolute;
   inset: 0;
   z-index: 1;
+}
+
+
+
+
+
+.custom-button {
+  background-color: rgb(233, 232, 227); /* Off-white background */
+  color: rgb(8, 8, 8); /* Black text */
+  font-family: Favorit, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 15px;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+  margin-left: 6px;
+  white-space: nowrap;
+  position: relative; /* Crucial for absolute positioning of child elements */
+  cursor: pointer;
+}
+
+.button-text {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    display: flex;
+}
+
+.button__replacement-text {
+  display: none;
+}
+
+.button__overlay {
+  position: absolute;
+  z-index: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 15px;
+  background-color: #D0D0D0; /* Example overlay color */
+}
+
+.button__glow {
+    position: absolute;
+    z-index: -1;
+    overflow: visible;
+    width: 68.1719px;
+    height: 37.125px;
+    background-color: #E0E0E0; /* Example glow color */
+    opacity: 0.5;
+    border-radius: 50%; /* Example for rounded glow */
+}
+
+.button__glow:nth-child(4) {
+    top: 21.5px;
+    left: 4px;
+    bottom: -15.625px;
+}
+
+.button__glow:nth-child(5) {
+    top: 21.5px;
+    right: 4px;
+    bottom: -15.625px;
+}
+
+/* Example Dark Mode */
+body.dark .custom-button {
+  background-color: rgb(28, 28, 28); /* Dark background */
+  color: rgb(233, 232, 227); /* Off-white text */
 }

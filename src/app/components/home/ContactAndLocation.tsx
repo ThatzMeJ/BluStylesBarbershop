@@ -12,7 +12,7 @@ const BackgroundImage: React.FC = () => (
       alt='Background Image'
       width={1920}
       height={1080}
-      className='absolute top-0 left-0 w-full h-full object-cover -z-50'
+      className='absolute top-0 left-0 w-full h-full object-cover z-1'
     />
     <div className='absolute service-overlay ' />
   </>
@@ -53,7 +53,7 @@ const ContactAndLocation = () => {
 
 
         <div className='w-full max-w-[642px] bg-white rounded-lg '>
-          
+
         </div>
       </div>
 

@@ -7,7 +7,7 @@ import useWindowDimensions from '../hooks/WindowDimensions'
 export default function Curve() {
   // Use the custom hook instead of directly accessing window
   const { height } = useWindowDimensions();
-
+  
   const initialPath = `M100 0 L100 ${height} Q-100 ${height / 2} 100 0`;
   const targetPath = `M100 0 L100 ${height} Q100 ${height / 2} 100 0`;
 

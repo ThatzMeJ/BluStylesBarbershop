@@ -30,8 +30,8 @@ const IntroSection = () => {
   return (
     <section ref={observe} className={`container min-h-[45rem] bg-[#051926] ${getContainerClass()}`}>
       <div className='flex flex-col h-[600px] md:grid md:grid-cols-2 xl:flex items-center justify-center gap-6 lg:relative'>
-        <div 
-        className={`min-h-[350px] sm:max-h-[600px] h-full w-full sm:max-w-[700px] md:col-start-2 md:row-start-1 ${getMarginLeft()} ${width < 1258 ? 'zoom-wrapper' : ''}`}
+        <div
+          className={`min-h-[350px] sm:max-h-[600px] h-full w-full sm:max-w-[700px] md:col-start-2 md:row-start-1 ${getMarginLeft()} ${width < 1258 ? 'zoom-wrapper' : ''}`}
 
         >
           <Image

@@ -32,9 +32,9 @@ const Testimonial = () => {
 
   return (
     <section className='bg-[var(--primary)] min-h-[40rem] relative py-10'>
-      <div className='absolute inset-0 hero-image-overlay -z-50' />
+      <div className='absolute inset-0 hero-image-overlay z-20' />
 
-      <div className='flex flex-col items-center justify-center w-full h-full z-10 relative text-[var(--primary-light)] text-center mb-10 gap-y-4'>
+      <div className='flex flex-col items-center justify-center w-full h-full z-30 relative text-[var(--primary-light)] text-center mb-10 gap-y-4'>
         <p className='uppercase text-white text-md font-medium'>
           Testimonial
         </p>
@@ -42,7 +42,7 @@ const Testimonial = () => {
           About Our Barber</h2>
       </div>
 
-      <div className='flex flex-row items-center justify-center w-full h-[550px] rounded-lg mx-auto overflow-hidden relative p-10 gap-x-10'>
+      <div className='flex flex-row items-center justify-center w-full h-[550px] rounded-lg mx-auto overflow-hidden relative p-10 gap-x-10 '>
         {renderReviewCards()}
       </div>
     </section>

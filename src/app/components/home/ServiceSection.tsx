@@ -4,7 +4,6 @@ import React, { forwardRef } from 'react'
 import Image from 'next/image'
 import useDimensions from 'react-cool-dimensions';
 
-
 interface ServiceCardProps {
   imageUrl: string
   title: string
@@ -41,11 +40,11 @@ ServiceCard.displayName = 'ServiceCard'
 const BackgroundVideo: React.FC = () => (
   <>
     <video
-      src="/video/ServiceVideo.mp4"
+      src='/video/ServiceVideo.mp4'
       autoPlay
       muted
       loop
-      className='absolute top-0 left-0 w-full h-full object-cover -z-10'
+      className='absolute top-0 left-0 w-full h-full object-cover z-1'
     />
     <div className='absolute hero-image-overlay' />
   </>
