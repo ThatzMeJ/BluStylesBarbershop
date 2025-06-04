@@ -3,39 +3,15 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { bookingTypes } from '../../../../constant/bookingTypes'
+import { useBookingStore } from '@/store/bookingStore';
 
-// Define types that match your database schema
-type BaseBookingPerson = {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phoneNumber?: string,
-  no_shows?: number
-}
-
-
-type RegisteredUser = BaseBookingPerson & {
-  type: 'registered';
-  bookingType: BookingMode
-}
-
-type GuestUser = BaseBookingPerson & {
-  type: 'guest';
-  bookingType: BookingMode
-}
-
-type BookingMode = 'single' | 'group' | null
-
-// Combined type for client-side use
-type BookingPerson = RegisteredUser | GuestUser;
 
 interface BookingTypeSelectorProps {
-  onBookingSelect: (bookingType: string) => void;
-  setUserData: React.Dispatch<React.SetStateAction<BookingPerson>> ;
+  onBookingSelect: () => void;
 }
 
-const BookingTypeSelector = ({ onBookingSelect, setUserData }: BookingTypeSelectorProps) => {
-
+const BookingTypeSelector = ({ onBookingSelect,  }: BookingTypeSelectorProps) => {
+  const setUserData = useBookingStore(state => state.setUserData);
   return (
     <div className="w-full">
       <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-6 sm:mb-8">
@@ -45,7 +21,7 @@ const BookingTypeSelector = ({ onBookingSelect, setUserData }: BookingTypeSelect
       </h1>
 
       <div className='flex flex-col gap-4 sm:gap-6 md:gap-10'>
-        {bookingTypes.map((type) => (
+        {bookingTypes.map((type: any) => (
           <motion.div
             key={type.id}
             layout
@@ -54,11 +30,8 @@ const BookingTypeSelector = ({ onBookingSelect, setUserData }: BookingTypeSelect
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
             onClick={() => {
-              setUserData((prev) => ({
-                ...prev,
-                bookingType: type.bookingType as BookingMode
-              }));
-              onBookingSelect(type.name)
+              setUserData({bookingType: type.bookingType})
+              onBookingSelect()
             }}
             className="bg-gray-900 rounded-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-300 border border-gray-800 shadow-lg hover:cursor-pointer"
           >

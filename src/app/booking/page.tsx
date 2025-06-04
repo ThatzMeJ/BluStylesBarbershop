@@ -2,14 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ServiceSelection from '../components/booking/ServiceSelection';
-import BookingTypeSelector from '../components/booking/BookingTypeSelector ';
+import BookingTypeSelector from '../components/booking/BookingTypeSelector';
 import { ArrowLeft, X } from 'lucide-react';
 import { useRouter } from 'next/navigation'
-import ProfessionalSelection from '../components/booking/ProfessionalSelection ';
 import { format } from 'date-fns';
-import Calendar from '../components/booking/Calendar';
-import { Alert, useDisclosure, addToast, ToastProvider } from '@heroui/react';
+import { Alert, useDisclosure, addToast, ToastProvider, Spinner } from '@heroui/react';
 import UserModal from '../components/booking/UserModal';
 import Button from '../components/booking/Button';
 import { useAuth } from '../context/AuthContext';
@@ -18,45 +15,86 @@ import Breadcrum from '../components/booking/Breadcrum'
 import PercentageChip from '../components/booking/PercentageChip'
 import StripedProgress from '@/app/components/booking/StripedProgress'
 import Head from 'next/head';
-import GuestAndServices from '../components/booking/GuestAndServices'
-// Import the moved types
+import { useBookingStore } from '@/store/bookingStore';
+import { FetchedBarberData, STATIC_BARBER_OPTIONS } from '../../../constant/barberOptions';
+import dynamic from 'next/dynamic';
+import ServiceSelection from '../components/booking/ServiceSelection';
 import {
-  BookingPerson,
-  BookingGuest
-} from '../../../constant/bookingTypes';
-import Service from '../../../constant/ServiceType';
+  startOfToday,
+} from 'date-fns';
+import ConfirmationModal from '../components/booking/ConfirmationModal';
+import BookingSummaryModal from '../components/booking/BookingSummaryModal';
+
+const GuestAndServices = dynamic(() => import('../components/booking/GuestAndServices'),
+  {
+    ssr: false,
+    loading: () =>
+      <div className="w-full flex justify-center items-center min-h-[200px]">
+        <Spinner size="lg" />
+      </div>
+  });
+
+
+const BarberSelection = dynamic(() => import('../components/booking/BarberSelection'),
+  {
+    ssr: false,
+    loading: () =>
+      <div className="w-full flex justify-center items-center min-h-[200px]">
+        <Spinner size="lg" />
+      </div>
+  });
+
+const PerServiceBarberSelection = dynamic(() => import('../components/booking/PerServiceBarberSelection'),
+  {
+    ssr: false,
+    loading: () =>
+      <div className="w-full flex justify-center items-center min-h-[200px]">
+        <Spinner size="lg" />
+      </div>
+  });
+
+const DateTimePicker = dynamic(() => import('../components/booking/DateTimePicker'),
+  {
+    ssr: false,
+    loading: () =>
+      <div className="w-full flex justify-center items-center min-h-[200px]">
+        <Spinner size="lg" />
+      </div>
+  });
+
 
 const Page = () => {
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  // Static options for barbers are added to the top of the list
+  const [barbers, setBarbers] = useState<FetchedBarberData[]>([...STATIC_BARBER_OPTIONS]);
   const { user, isAuthenticated, logout } = useAuth();
-  const [userData, setUserData] = useState<BookingPerson>({
-    type: 'guest',
-    firstName: user?.first_name,
-    lastName: user?.last_name,
-    email: user?.email,
-    phoneNumber: user?.phone_number,
-    profile_pic: user?.profile_pic,
-    no_shows: user?.no_shows,
-    bookingType: null,
-    bookingGuest: Array<BookingGuest>()
-  });
-  const [selectedService, setSelectedService] = useState<Array<Service>>([]);
+  const userData = useBookingStore(state => state.userData);
+  const setUserData = useBookingStore(state => state.setUserData);
+  const resetBooking = useBookingStore(state => state.resetBooking);
+  const mainUserServices = useBookingStore(state => state.mainUserServices);
+  const isSelectingForGuest = useBookingStore(state => state.isSelectingForGuest);
+  const setIsSelectingForGuest = useBookingStore(state => state.setIsSelectingForGuest);
+  const step = useBookingStore(state => state.step);
+  const setStep = useBookingStore(state => state.setStep);
+  const [categories, setCategories] = useState()
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [modalTitle, setModalTitle] = useState<'Login' | 'Sign Up'>('Login');
   const [noShowsAlert, setNoShowsAlert] = useState(true);
-  const [step, setStep] = useState<number>(1);
-  const [selectedProfessional, setSelectedProfessional] = useState<number | null>(null);
+  const selectedBarber = useBookingStore(state => state.selectedBarber);
+  const setSelectedBarber = useBookingStore(state => state.setSelectedBarber);
   const [error, setError] = useState<string>('');
   const [bookingDetails, setBookingDetails] = useState<{
     date: Date | null;
     time: string | null;
   }>({
-    date: null,
+    date: startOfToday(),
     time: null,
   });
-  const [isSelectingForGuest, setIsSelectingForGuest] = useState(false);
+  const [currentGuestId, setCurrentGuestId] = useState<number | undefined>(undefined);
+  console.log("bookingDetails", bookingDetails)
+
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -77,10 +115,10 @@ const Page = () => {
     if (user && isAuthenticated) {
       setUserData({
         type: 'registered',
-        firstName: user.first_name,
-        lastName: user.last_name,
+        first_name: user.first_name,
+        last_name: user.last_name,
         email: user.email,
-        phoneNumber: user.phone_number,
+        phone_number: user.phone_number,
         profile_pic: user.profile_pic,
         no_shows: user.no_shows,
         bookingType: null,
@@ -100,15 +138,7 @@ const Page = () => {
         localStorage.setItem('hasSeenNoShowWelcomeToast', 'true');
       }
     } else {
-      setUserData({
-        type: 'guest',
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: '',
-        bookingType: null,
-        bookingGuest: []
-      });
+      resetBooking();
     }
 
     // Check localStorage for noShowsAlert visibility
@@ -118,11 +148,55 @@ const Page = () => {
         setNoShowsAlert(false);
       }
     }
-
+    console.log("userData / Page.booking.tsx", userData)
     // Clear any previous errors when component mounts or when auth state changes
     if (error) setError('');
 
   }, [user, isAuthenticated, error, setError]);
+
+  useEffect(() => {
+    const fetchBarbers = async () => {
+      try {
+        const response = await fetch('http://localhost:3005/barbers/all?has_availability=true')
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json()
+
+        setBarbers((prev) => [...prev, ...data.data])
+        return data
+
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch barbers')
+      }
+    }
+
+    const fetchCutsAndCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:3005/services/services-with-categories', {
+          method: 'GET'
+        })
+        if (!response.ok) {
+          throw new Error('Unable to fetch services and categories.')
+        }
+        const data = await response.json()
+        setCategories(data.data)
+      } catch (error) {
+        console.error('Unable to get cuts.', error)
+        throw error;
+      }
+    }
+
+    Promise.all([fetchBarbers(), fetchCutsAndCategories()])
+      .catch((error) => {
+        console.error('Unable to fetch data.', error)
+        throw error;
+      })
+  }, [])
+
+  console.log("categories", categories)
 
   useEffect(() => {
     // Reset isSelectingForGuest when moving away from service selection steps
@@ -136,36 +210,10 @@ const Page = () => {
     setStep(2);
   };
 
-  //Passed to ServiceSelction Component
-  const handleServiceSelect = (service: Service) => {
-    if (isSelectingForGuest) {
-      // If selecting for a guest, add the service to the guest's services
-      const newGuest: BookingGuest = {
-        name: `Guest ${userData.bookingGuest?.length ?? 0 + 1}`,
-        services: [service]
-      };
-      setUserData(prev => ({
-        ...prev,
-        bookingGuest: [...(prev.bookingGuest ?? []), newGuest]
-      }));
-      // After selecting services for guest, go back to guest management
-      setStep(2.5);
-      setIsSelectingForGuest(false);
-    } else {
-      // Normal service selection for main user
-      const isAlreadySelected = selectedService.some(s => s.id === service.id);
-      if (isAlreadySelected) {
-        setSelectedService(prev => prev.filter(s => s.id !== service.id));
-      } else {
-        setSelectedService(prev => [...prev, service]);
-      }
-    }
-  };
 
   //Passed to ProfessionalSelection Component
   const handleProfessionalSelect = (id: number) => {
-    setSelectedProfessional(id);
-    setStep(4);
+    setSelectedBarber(id);
   }
 
   const handleDateTimeSelect = (date: Date, time: string) => {
@@ -192,6 +240,8 @@ const Page = () => {
     [key: string]: string | undefined; // Fixed any type to be more specific
   }
 
+
+
   const handleBookingSubmit = async (formData: BookingFormData) => {
     try {
       const response = await fetch('/api/bookings', {
@@ -201,8 +251,8 @@ const Page = () => {
         },
         body: JSON.stringify({
           ...formData,
-          service: selectedService,
-          professional: selectedProfessional,
+          service: mainUserServices,
+          professional: selectedBarber,
           bookingDetails: {
             date: bookingDetails.date ? format(bookingDetails.date, 'yyyy-MM-dd') : null,
             time: bookingDetails.time
@@ -225,6 +275,16 @@ const Page = () => {
 
   // Generate structured data for the booking page
   const generateStructuredData = () => {
+    // Use a fixed date rather than new Date() to prevent hydration mismatch
+    const currentDate = new Date(Date.now());
+    // Format dates as strings to make them consistent between server/client
+    const availabilityStart = currentDate.toISOString().split('T')[0];
+
+    // Calculate date 3 months from now but in a predictable way
+    const endDate = new Date(currentDate);
+    endDate.setMonth(currentDate.getMonth() + 3);
+    const availabilityEnd = endDate.toISOString().split('T')[0];
+
     const structuredData = {
       '@context': 'https://schema.org',
       '@type': 'Service',
@@ -246,13 +306,16 @@ const Page = () => {
       'offers': {
         '@type': 'Offer',
         'availability': 'https://schema.org/InStock',
-        'availabilityStarts': new Date().toISOString(),
-        'availabilityEnds': new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString(),
+        'availabilityStarts': availabilityStart,
+        'availabilityEnds': availabilityEnd,
         'priceCurrency': 'USD'
       }
     };
     return JSON.stringify(structuredData);
   };
+
+  // Memoize the structured data to ensure consistency
+  const structuredDataJSON = React.useMemo(() => generateStructuredData(), []);
 
   // Set page title based on the current step
   const getStepTitle = () => {
@@ -278,7 +341,7 @@ const Page = () => {
       {/* Structured Data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: generateStructuredData() }}
+        dangerouslySetInnerHTML={{ __html: structuredDataJSON }}
       />
 
       <main className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex flex-col">
@@ -288,15 +351,21 @@ const Page = () => {
               <button
                 onClick={() => {
                   // If the user is on the service selection step and the booking type is group, clear the booking guest array
+                  const step = useBookingStore.getState().step;
                   if (step === 2 && userData.bookingType === 'group') {
                     userData.bookingGuest?.splice(0, userData.bookingGuest.length)
                   }
 
                   if (step === 2.5 && userData.bookingType === 'group') {
-                    setStep(step => step - 0.5);
+                    setStep(step - 0.5);
+                  } else if (step === 3 && userData.bookingType === 'group') {
+                    setStep(2.5);
+                  } else if (step === 3.5 && userData.bookingType === 'group') {
+                    setStep(3);
                   } else {
-                    setStep(step => step - 1);
+                    setStep(step - 1);
                   }
+
                 }}
                 className="p-2 hover:bg-gray-800 rounded-full transition-colors"
                 aria-label="Go back to previous step"
@@ -316,7 +385,7 @@ const Page = () => {
           {user && isAuthenticated && userData ? (
             <UserProfileMenu
               userData={{
-                first_name: userData.firstName || '',
+                first_name: userData.first_name || '',
                 no_shows: userData.no_shows || 0,
                 profile_pic: userData?.profile_pic || '',
                 type: userData.type
@@ -395,7 +464,7 @@ const Page = () => {
                           transition={{ duration: 0.3 }}
                           className="w-full max-w-xl"
                         >
-                          <BookingTypeSelector onBookingSelect={handleBookingSelect} setUserData={setUserData} />
+                          <BookingTypeSelector onBookingSelect={handleBookingSelect} />
                         </motion.div>
                       );
                     case 2:
@@ -408,15 +477,14 @@ const Page = () => {
                           transition={{ duration: 0.3 }}
                           className="w-full max-w-6xl"
                         >
-                          <ServiceSelection
-                            setSelectedService={handleServiceSelect}
-                            setStep={setStep}
-                            isMobile={isMobile}
-                            selectedService={selectedService}
-                            userData={userData}
-                            isGuest={isSelectingForGuest}
-                            setIsSelectingForGuest={setIsSelectingForGuest}
-                          />
+                          {categories && (
+                            <ServiceSelection
+                              isMobile={isMobile}
+                              isGuest={isSelectingForGuest}
+                              guestId={currentGuestId}
+                              categories={categories}
+                            />
+                          )}
                         </motion.div>
                       );
                     case 2.5:
@@ -431,13 +499,14 @@ const Page = () => {
                             className="w-full max-w-6xl"
                           >
                             <GuestAndServices
-                              userData={userData}
-                              selectedService={selectedService}
+                              mainUserServices={mainUserServices}
                               isMobile={isMobile}
+                              // Callback function if user clicks on add guest
                               onAddGuest={() => {
                                 setIsSelectingForGuest(true);
                                 setStep(2); // Go back to service selection
                               }}
+                              setCurrentGuestId={setCurrentGuestId}
                             />
                           </motion.div>
                         );
@@ -453,9 +522,26 @@ const Page = () => {
                           transition={{ duration: 0.3 }}
                           className="w-full max-w-6xl"
                         >
-                          <ProfessionalSelection
+                          <BarberSelection
                             onProfessionalSelect={handleProfessionalSelect}
-                            selectedProfessional={selectedProfessional}
+                            selectedBarber={selectedBarber}
+                            currentBarbers={barbers}
+                          />
+                        </motion.div>
+                      );
+                    case 3.5:
+                      return (
+                        <motion.div
+                          key="step3.5"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          transition={{ duration: 0.3 }}
+                          className="w-full max-w-6xl"
+                        >
+                          <PerServiceBarberSelection
+                            isMobile={isMobile}
+                            fetchedBarbers={barbers}
                           />
                         </motion.div>
                       );
@@ -469,15 +555,17 @@ const Page = () => {
                           transition={{ duration: 0.3 }}
                           className="w-full max-w-6xl"
                         >
-                          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
+                          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-2">
                             <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
                               Select Date & Time
                             </span>
                           </h1>
-                          <Calendar
-                            onDateTimeSelect={handleDateTimeSelect}
-                            selectedDate={bookingDetails.date}
-                            selectedTime={bookingDetails.time}
+                          <DateTimePicker
+                            onDateTimeSelect={(date, timeSlot) => handleDateTimeSelect(date, timeSlot.time)}
+                            initialDate={bookingDetails.date || undefined}
+                            initialTimeId={bookingDetails.time ? `${format(bookingDetails.date || new Date(), 'yyyy-MM-dd')}-${bookingDetails.time}` : undefined}
+                            fetchedBarbers={barbers}
+                            isMobile={isMobile}
                           />
                         </motion.div>
                       );
@@ -495,6 +583,81 @@ const Page = () => {
 
       {/* User Sign-in/Login Modal */}
       <UserModal isOpen={isOpen} onOpenChange={onOpenChange} title={modalTitle} setError={setError} />
+
+      {/* Centralized Modal Manager - Renders appropriate modal based on step */}
+      {(() => {
+        // Helper function to determine which modal to show and with what props
+        const getModalConfig = () => {
+          switch (step) {
+            case 2:
+              // Service Selection Step - only for main user, not guests
+              if (!isSelectingForGuest) {
+                return {
+                  type: 'confirmation' as const,
+                  props: {
+                    isGuest: false, // Always false since this is main user
+                    currentGuestServices: [], // Not needed for main user
+                    currentGuestId: null, // Not needed for main user  
+                    selectedProfessional: selectedBarber
+                  }
+                };
+              }
+              // If selecting for guest, let ServiceSelection handle its own modal
+              return null;
+
+            case 2.5:
+              // Guest and Services Step (Group booking)
+              if (userData.bookingType === 'group') {
+                return {
+                  type: 'confirmation' as const,
+                  props: {
+                    isGuest: false,
+                    currentGuestServices: userData.bookingGuest || [],
+                    currentGuestId: null,
+                    selectedProfessional: selectedBarber
+                  }
+                };
+              }
+              return null;
+
+            case 3:
+              // Professional Selection Step
+              return {
+                type: 'summary' as const
+              };
+
+            case 3.5:
+              // Per-Service Professional Selection Step
+              return {
+                type: 'summary' as const
+              };
+
+            default:
+              return null;
+          }
+        };
+
+        const modalConfig = getModalConfig();
+
+        if (!modalConfig) return null;
+
+        if (modalConfig.type === 'confirmation') {
+          return (
+            <ConfirmationModal
+              isGuest={modalConfig.props.isGuest}
+              currentGuestServices={modalConfig.props.currentGuestServices}
+              currentGuestId={modalConfig.props.currentGuestId}
+              selectedProfessional={modalConfig.props.selectedProfessional}
+            />
+          );
+        }
+
+        if (modalConfig.type === 'summary') {
+          return <BookingSummaryModal />;
+        }
+
+        return null;
+      })()}
     </>
   );
 };

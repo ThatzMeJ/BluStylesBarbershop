@@ -1,13 +1,12 @@
-interface Service {
-  id: string;
+export interface Service {
+  service_id: number;
   name: string;
   description: string;
-  time: number;
+  service_duration: number;
   price: number;
-  popular?: boolean;
-  specialty?: boolean;
-  category: number;
-  [key: string]: unknown;
+  category_id: number;
 }
+
+
 
 export default Service

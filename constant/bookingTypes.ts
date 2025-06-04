@@ -1,38 +1,33 @@
 import Service from './ServiceType'; // Adjusted path relative to the new file location
 
+export type BookingMode = 'single' | 'group' | null;
+
 // Define types that match your database schema
 export type BaseBookingPerson = {
-  firstName?: string;
-  lastName?: string;
+  first_name?: string;
+  last_name?: string;
   email?: string;
-  phoneNumber?: string;
+  phone_number?: string;
   profile_pic?: string;
   no_shows?: number;
-  
+  bookingType: BookingMode;
+  bookingGuest?: Array<BookingGuest>;
 };
 
 export interface BookingGuest {
+  id: number;
   name: string;
+  barber_id: number | null;
   services: Array<Service>;
 }
 
-// Minimal interface for ID comparison
-export interface Identifiable {
-  id: number | string; // Allow string IDs as well, like from MongoDB (_id)
-}
-
-export type BookingMode = 'single' | 'group' | null;
 
 export type RegisteredUser = BaseBookingPerson & {
   type: 'registered';
-  bookingType: BookingMode;
-  bookingGuest?: Array<BookingGuest>;
 };
 
 export type GuestUser = BaseBookingPerson & {
   type: 'guest';
-  bookingType: BookingMode;
-  bookingGuest?: Array<BookingGuest>;
 };
 
 // Combined type for client-side use
@@ -40,15 +35,15 @@ export type BookingPerson = RegisteredUser | GuestUser;
 
 export const bookingTypes = [
   {
-    id: 1,
+    id: 0,
     name: 'Single Booking',
     description: 'Schedule service for yourself',
-    bookingType: 'single'
+    bookingType: 'single' as BookingMode
   },
   {
-    id: 2,
+    id: -1,
     name: 'Multiple Bookings',
     description: 'For yourself and others',
-    bookingType: 'group'
+    bookingType: 'group' as BookingMode
   }
 ]
