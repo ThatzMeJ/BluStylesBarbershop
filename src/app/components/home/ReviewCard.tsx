@@ -47,7 +47,7 @@ const ReviewCard = () => {
         <div ref={duplicateListRef}>
           {[...userReviews1, ...userReviews1].map((item, index) => (
             <div
-              ref={(el) => (allItemsRef.current[index] = el)}
+              ref={(el) => { allItemsRef.current[index] = el as never; }}
               key={`${item.name}-${index}`}
               className="bg-white flex-1 max-w-64 rounded-lg flex flex-col items-start justify-start my-2 text-black p-5 gap-4"
             >
