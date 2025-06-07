@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { motion, useMotionValue, animate } from 'framer-motion';
 import Image from 'next/image';
 import FaQuoteLeft from '../../../../public/img/63515e0705695e64229e5eb7_quotes-fill.svg';
@@ -17,7 +17,7 @@ const ReviewCard = () => {
   const [duplicateListRef, duplicateListBounds] = useMeasure();
 
   const yTranslation = useMotionValue(0);
-  const allItemsRef = useRef<HTMLDivElement[]>([]);
+  // const allItemsRef = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
     if (!duplicateListBounds.height) return;
@@ -47,7 +47,7 @@ const ReviewCard = () => {
         <div ref={duplicateListRef}>
           {[...userReviews1, ...userReviews1].map((item, index) => (
             <div
-              ref={(el) => { allItemsRef.current[index] = el as HTMLDivElement }}
+              // ref={(el) => { allItemsRef.current[index] = el as HTMLDivElement }}
               key={`${item.name}-${index}`}
               className="bg-white flex-1 max-w-64 rounded-lg flex flex-col items-start justify-start my-2 text-black p-5 gap-4"
             >
