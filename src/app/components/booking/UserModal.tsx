@@ -23,13 +23,12 @@ interface UserModalProps {
   setError: React.Dispatch<React.SetStateAction<string>>;
 }
 
+// TODO: Add authMethod to the props and setError to the props
 const UserModal = ({
   isOpen,
   onOpenChange,
   title,
-  authMethod = 'email',
   onUserUpdate,
-  setError
 }: UserModalProps) => {
   const [formData, setFormData] = useState({
     email: '',
@@ -125,7 +124,7 @@ const UserModal = ({
 
                     <div className='flex gap-2'>
                       <Input
-                      isRequired
+                        isRequired
                         name="firstName"
                         label="First Name"
                         labelPlacement="outside"

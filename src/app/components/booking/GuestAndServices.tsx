@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import React, { useState } from 'react'
 import { BookingGuest } from '../../../../constant/bookingTypes'
 import { Plus, UserCircle, EllipsisVertical, ChevronDown } from 'lucide-react';
@@ -12,7 +12,7 @@ import {
 import Image from 'next/image';
 import Service from '../../../../constant/ServiceType';
 import { useBookingStore } from '@/store/bookingStore'
-import ConfirmationModal from './ConfirmationModal';
+// import ConfirmationModal from './ConfirmationModal';
 
 
 
@@ -203,9 +203,9 @@ const GuestAndServices = ({ mainUserServices, isMobile, onAddGuest, setCurrentGu
       </div>
 
 
-{/* 
+      {/* 
         <ConfirmationModal isGuest={false} currentGuestServices={[]} currentGuestId={null} selectedProfessional={undefined} /> */}
- 
+
       <ModelOptions isOpen={isOpen} onOpenChange={onOpenChange} modalType={modalType} isMobile={isMobile} handleRemoveGuest={handleRemoveGuest} handleEditServices={handleEditServices} guestData={guestData} />
     </div>
   );

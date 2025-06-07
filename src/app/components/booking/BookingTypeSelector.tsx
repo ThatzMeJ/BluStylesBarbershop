@@ -10,7 +10,9 @@ interface BookingTypeSelectorProps {
   onBookingSelect: () => void;
 }
 
-const BookingTypeSelector = ({ onBookingSelect,  }: BookingTypeSelectorProps) => {
+
+
+const BookingTypeSelector = ({ onBookingSelect, }: BookingTypeSelectorProps) => {
   const setUserData = useBookingStore(state => state.setUserData);
   return (
     <div className="w-full">
@@ -21,7 +23,7 @@ const BookingTypeSelector = ({ onBookingSelect,  }: BookingTypeSelectorProps) =>
       </h1>
 
       <div className='flex flex-col gap-4 sm:gap-6 md:gap-10'>
-        {bookingTypes.map((type: any) => (
+        {bookingTypes.map((type) => (
           <motion.div
             key={type.id}
             layout
@@ -30,7 +32,7 @@ const BookingTypeSelector = ({ onBookingSelect,  }: BookingTypeSelectorProps) =>
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
             onClick={() => {
-              setUserData({bookingType: type.bookingType})
+              setUserData({ bookingType: type.bookingType })
               onBookingSelect()
             }}
             className="bg-gray-900 rounded-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-300 border border-gray-800 shadow-lg hover:cursor-pointer"

@@ -6,7 +6,7 @@ import { FetchedBarberData } from '../../../../constant/barberOptions'
 import { User } from 'lucide-react'
 import { useBookingStore } from '@/store/bookingStore'
 import { Spinner } from "@heroui/react";
-import BookingSummaryModal from './BookingSummaryModal'
+
 
 
 interface ProfessionalSelectionProps {
@@ -25,7 +25,7 @@ const BarberSelection = ({
   const [error, setError] = useState<string | null>(null)
   const [sessionBarber, setSessionBarber] = useState<number>(selectedBarber)
   const updateGuestBarber = useBookingStore(state => state.updateGuestBarber);
-  const step = useBookingStore(state => state.step);
+
 
 
   useEffect(() => {

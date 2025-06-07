@@ -19,7 +19,7 @@ type AuthContextType = {
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  signup: (userData: any) => Promise<void>;
+  signup: (userData: User) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 };
@@ -98,9 +98,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // After successful login, JWT token is set as HttpOnly cookie
       // We just need to get the user data
       await checkAuthStatus();
-    } catch (err: any) {
-      
-      setError(err.message || 'Login failed');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      setError(errorMessage);
       setIsAuthenticated(false);
     } finally {
       setLoading(false);
@@ -108,7 +108,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Signup function
-  const signup = async (userData: any) => {
+  const signup = async (userData: User) => {
     setLoading(true);
     setError(null);
     try {

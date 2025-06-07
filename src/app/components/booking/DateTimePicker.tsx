@@ -9,8 +9,8 @@ import { Accordion, AccordionItem, useDisclosure, AvatarGroup, Avatar } from '@h
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader } from '@heroui/react';
 import { useBookingStore } from '@/store/bookingStore';
 import { FetchedBarberData } from '../../../../constant/barberOptions';
-import { BookingGuest } from '../../../../constant/bookingTypes';
-import { BookingPerson } from '../../../../constant/bookingTypes';
+// import { BookingGuest } from '../../../../constant/bookingTypes';
+// import { BookingPerson } from '../../../../constant/bookingTypes';
 import Service from '../../../../constant/ServiceType';
 import Image from 'next/image';
 import {
@@ -74,32 +74,32 @@ const fetchAvailableDates = async (barberIds: FetchedBarberData[], numberOfDays:
 }
 
 // Stage 2: Fetch detailed time slots for a specific date
-const fetchTimeSlots = async (barberIds: FetchedBarberData[], selectedDate: Date) => {
-  const requestBody = {
-    date: selectedDate.toISOString(),
-    barbers: barberIds.map((barber) => ({
-      barber_id: barber.barber_id,
-      name: barber.first_name || barber.name
-    })),
-    booking_type: barberIds.length > 1 ? 'group' : 'single'
-  };
+// const fetchTimeSlots = async (barberIds: FetchedBarberData[], selectedDate: Date) => {
+//   const requestBody = {
+//     date: selectedDate.toISOString(),
+//     barbers: barberIds.map((barber) => ({
+//       barber_id: barber.barber_id,
+//       name: barber.first_name || barber.name
+//     })),
+//     booking_type: barberIds.length > 1 ? 'group' : 'single'
+//   };
 
-  const response = await fetch('/api/barbers/time-slots', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify(requestBody)
-  });
+//   const response = await fetch('/api/barbers/time-slots', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Accept': 'application/json'
+//     },
+//     body: JSON.stringify(requestBody)
+//   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch time slots: ${response.status}`);
-  }
+//   if (!response.ok) {
+//     throw new Error(`Failed to fetch time slots: ${response.status}`);
+//   }
 
-  const data = await response.json();
-  return data;
-};
+//   const data = await response.json();
+//   return data;
+// };
 
 // Define time slot hours statically (no randomness during rendering)
 const timeSlotHours = [
@@ -161,7 +161,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
   const [selectedDate, setSelectedDate] = useState<Date>(initialDate || new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null);
   const [availableTimeSlots, setAvailableTimeSlots] = useState<TimeSlot[]>([]);
-  const [disabledDates, setDisabledDates] = useState<Date[]>([]);
+  // const [disabledDates, setDisabledDates] = useState<Date[]>([]);
   const selectedBarber = useBookingStore((state) => state.selectedBarber)
   const NUMBER_OF_DAYS = 14
   const userData = useBookingStore((state) => state.userData)
@@ -207,8 +207,8 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
 
     setCurrentSelectedBarber(barbers);
 
-    fetchAvailableDates(barbers, NUMBER_OF_DAYS)
-  }, []);
+    fetchAvailableDates(barbers, NUMBER_OF_DAYS, new Date()).catch(console.error);
+  }, [fetchedBarbers, selectedBarber, userData.bookingGuest]);
 
 
   console.log("currentSelectedBarber", currentSelectedBarber)
@@ -233,12 +233,12 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     onDateTimeSelect(selectedDate, timeSlot);
   };
 
-  const getDisabledDates = (date: Date) => {
-    const disabledDates = [];
-    const currentDate = new Date();
+  // const getDisabledDates = (date: Date) => {
+  //   const disabledDates = [];
+  //   const currentDate = new Date();
 
 
-  }
+  // }
 
 
   return (
@@ -361,13 +361,13 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
 
 // Helper type guard functions
 // If currentUser object has the key 'type' than its the main user else a guest
-function isBookingPerson(user: BookingPerson | BookingGuest | null): user is BookingPerson {
-  return user !== null && 'type' in user;
-}
+// function isBookingPerson(user: BookingPerson | BookingGuest | null): user is BookingPerson {
+//   return user !== null && 'type' in user;
+// }
 
-function isBookingGuest(user: BookingPerson | BookingGuest | null): user is BookingGuest {
-  return user !== null && 'id' in user;
-}
+// function isBookingGuest(user: BookingPerson | BookingGuest | null): user is BookingGuest {
+//   return user !== null && 'id' in user;
+// }
 
 interface ModelOptionsProps {
   isOpen: boolean;
@@ -569,133 +569,133 @@ function ModelOptions({ isOpen, onOpenChange, isMobile, fetchedBarbers, setCurre
 }
 
 
-interface BarberSelectionModalProps {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-  isMobile: boolean;
-  currentUser: BookingPerson | BookingGuest | null
-}
+// interface BarberSelectionModalProps {
+//   isOpen: boolean;
+//   onOpenChange: (isOpen: boolean) => void;
+//   isMobile: boolean;
+//   currentUser: BookingPerson | BookingGuest | null
+// }
 
 
-function BarberSelectionModal({ isOpen, onOpenChange, isMobile, currentUser, fetchedBarbers, selectedBarber, setSelectedBarber }: BarberSelectionModalProps & { fetchedBarbers: FetchedBarberData[], selectedBarber: number | undefined, setSelectedBarber: (barberId: number) => void }) {
-  const updateGuestBarber = useBookingStore((state) => state.updateGuestBarber);
+// function BarberSelectionModal({ isOpen, onOpenChange, isMobile, currentUser, fetchedBarbers, selectedBarber, setSelectedBarber }: BarberSelectionModalProps & { fetchedBarbers: FetchedBarberData[], selectedBarber: number | undefined, setSelectedBarber: (barberId: number) => void }) {
+//   const updateGuestBarber = useBookingStore((state) => state.updateGuestBarber);
 
-  // Determine which barber is currently selected based on who we're viewing
-  const getCurrentSelectedBarber = () => {
-    if (isBookingPerson(currentUser)) {
-      // For main user, use the global selectedBarber state
-      return selectedBarber;
-    } else if (isBookingGuest(currentUser)) {
-      // For guests, use their own barber_id
-      return currentUser.barber_id || 0;
-    }
-    return 0; // Default
-  };
+//   // Determine which barber is currently selected based on who we're viewing
+//   const getCurrentSelectedBarber = () => {
+//     if (isBookingPerson(currentUser)) {
+//       // For main user, use the global selectedBarber state
+//       return selectedBarber;
+//     } else if (isBookingGuest(currentUser)) {
+//       // For guests, use their own barber_id
+//       return currentUser.barber_id || 0;
+//     }
+//     return 0; // Default
+//   };
 
-  const currentSelectedBarber = getCurrentSelectedBarber();
+//   const currentSelectedBarber = getCurrentSelectedBarber();
 
-  return (
-    isMobile ? (
-      <Drawer isOpen={isOpen} onOpenChange={onOpenChange} size='5xl' placement='bottom' className='text-black'>
-        <DrawerContent>
-          {(onClose) => (
-            <>
-              <DrawerHeader className="flex flex-col gap-1">
-                {isBookingPerson(currentUser)
-                  ? `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'Me'
-                  : isBookingGuest(currentUser)
-                    ? `Guest: ${currentUser.name}`
-                    : 'Select Professional'
-                }
-              </DrawerHeader>
+//   return (
+//     isMobile ? (
+//       <Drawer isOpen={isOpen} onOpenChange={onOpenChange} size='5xl' placement='bottom' className='text-black'>
+//         <DrawerContent>
+//           {(onClose) => (
+//             <>
+//               <DrawerHeader className="flex flex-col gap-1">
+//                 {isBookingPerson(currentUser)
+//                   ? `${currentUser.first_name || ''} ${currentUser.last_name || ''}`.trim() || 'Me'
+//                   : isBookingGuest(currentUser)
+//                     ? `Guest: ${currentUser.name}`
+//                     : 'Select Professional'
+//                 }
+//               </DrawerHeader>
 
-              <DrawerBody className='grid grid-cols-2 gap-4'>
-                {fetchedBarbers && fetchedBarbers.map((barber) => {
-                  // Skip the "Select professional per service" option
-                  if (barber.barber_id === -1) return null;
+//               <DrawerBody className='grid grid-cols-2 gap-4'>
+//                 {fetchedBarbers && fetchedBarbers.map((barber) => {
+//                   // Skip the "Select professional per service" option
+//                   if (barber.barber_id === -1) return null;
 
-                  return (
-                    <motion.div
-                      key={barber.barber_id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{
-                        opacity: 1,
-                        scale: currentSelectedBarber === barber.barber_id ? 1.05 : 1,
-                        borderColor: currentSelectedBarber === barber.barber_id ? 'rgb(59, 130, 246)' : 'rgb(31, 41, 55)'
-                      }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.3 }}
-                      onClick={() => {
-                        if (isBookingPerson(currentUser)) {
-                          // Set barber for main user
-                          setSelectedBarber(barber.barber_id);
-                        } else if (isBookingGuest(currentUser)) {
-                          // Update the guest's barber_id in the userData store
-                          updateGuestBarber(currentUser.id, barber.barber_id);
-                        }
-                        onClose();
-                      }}
-                      className={`bg-gray-900 rounded-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-300 border-2 ${currentSelectedBarber === barber.barber_id
-                        ? 'border-blue-500 ring-4 ring-blue-500/30 shadow-lg shadow-blue-500/20'
-                        : 'border-gray-800 hover:border-gray-700'
-                        } cursor-pointer h-full`}
-                    >
-                      <div className="flex flex-col items-center justify-center p-3 sm:p-4 md:p-5 h-full relative">
-                        {currentSelectedBarber === barber.barber_id && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="absolute top-2 right-2 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center"
-                          >
-                            <motion.div
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              className="w-2 h-2 bg-white rounded-full"
-                            />
-                          </motion.div>
-                        )}
-                        <div className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-800 mb-2 ${currentSelectedBarber === barber.barber_id ? 'ring-2 ring-blue-500' : ''
-                          }`}>
-                          {typeof barber.profile_pic !== "string" || barber.profile_pic === null ? (
-                            barber.profile_pic ? (
-                              barber.profile_pic // Render the SVG or ReactNode directly
-                            ) : (
-                              <User className="w-6 h-6 text-gray-400" />
-                            )
-                          ) : (
-                            <Image
-                              src={barber.profile_pic as string}
-                              className='w-full h-full rounded-full object-cover'
-                              width={48}
-                              height={48}
-                              quality={100}
-                              priority
-                              alt="Barber profile"
-                            />
-                          )}
-                        </div>
-                        <h3 className="mt-2 text-xs sm:text-sm md:text-base font-bold text-white text-center">{barber.first_name ?? barber.name}</h3>
-                        <p className="text-xs sm:text-sm text-gray-400 text-center mt-1 line-clamp-2 min-h-[20px]">{barber.description ? barber.description : barber.barber_id !== -1 ? 'barber' : '\u00A0'}</p>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </DrawerBody>
-            </>
-          )}
-        </DrawerContent>
-      </Drawer>
-    ) : (
-      <div className="relative">
-        {isOpen && (
-          <>
-            <div>BBC</div>
-          </>
-        )}
-      </div>
-    )
-  );
-}
+//                   return (
+//                     <motion.div
+//                       key={barber.barber_id}
+//                       layout
+//                       initial={{ opacity: 0, scale: 0.9 }}
+//                       animate={{
+//                         opacity: 1,
+//                         scale: currentSelectedBarber === barber.barber_id ? 1.05 : 1,
+//                         borderColor: currentSelectedBarber === barber.barber_id ? 'rgb(59, 130, 246)' : 'rgb(31, 41, 55)'
+//                       }}
+//                       exit={{ opacity: 0, scale: 0.9 }}
+//                       transition={{ duration: 0.3 }}
+//                       onClick={() => {
+//                         if (isBookingPerson(currentUser)) {
+//                           // Set barber for main user
+//                           setSelectedBarber(barber.barber_id);
+//                         } else if (isBookingGuest(currentUser)) {
+//                           // Update the guest's barber_id in the userData store
+//                           updateGuestBarber(currentUser.id, barber.barber_id);
+//                         }
+//                         onClose();
+//                       }}
+//                       className={`bg-gray-900 rounded-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-300 border-2 ${currentSelectedBarber === barber.barber_id
+//                         ? 'border-blue-500 ring-4 ring-blue-500/30 shadow-lg shadow-blue-500/20'
+//                         : 'border-gray-800 hover:border-gray-700'
+//                         } cursor-pointer h-full`}
+//                     >
+//                       <div className="flex flex-col items-center justify-center p-3 sm:p-4 md:p-5 h-full relative">
+//                         {currentSelectedBarber === barber.barber_id && (
+//                           <motion.div
+//                             initial={{ opacity: 0 }}
+//                             animate={{ opacity: 1 }}
+//                             className="absolute top-2 right-2 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center"
+//                           >
+//                             <motion.div
+//                               initial={{ scale: 0 }}
+//                               animate={{ scale: 1 }}
+//                               className="w-2 h-2 bg-white rounded-full"
+//                             />
+//                           </motion.div>
+//                         )}
+//                         <div className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-800 mb-2 ${currentSelectedBarber === barber.barber_id ? 'ring-2 ring-blue-500' : ''
+//                           }`}>
+//                           {typeof barber.profile_pic !== "string" || barber.profile_pic === null ? (
+//                             barber.profile_pic ? (
+//                               barber.profile_pic // Render the SVG or ReactNode directly
+//                             ) : (
+//                               <User className="w-6 h-6 text-gray-400" />
+//                             )
+//                           ) : (
+//                             <Image
+//                               src={barber.profile_pic as string}
+//                               className='w-full h-full rounded-full object-cover'
+//                               width={48}
+//                               height={48}
+//                               quality={100}
+//                               priority
+//                               alt="Barber profile"
+//                             />
+//                           )}
+//                         </div>
+//                         <h3 className="mt-2 text-xs sm:text-sm md:text-base font-bold text-white text-center">{barber.first_name ?? barber.name}</h3>
+//                         <p className="text-xs sm:text-sm text-gray-400 text-center mt-1 line-clamp-2 min-h-[20px]">{barber.description ? barber.description : barber.barber_id !== -1 ? 'barber' : '\u00A0'}</p>
+//                       </div>
+//                     </motion.div>
+//                   );
+//                 })}
+//               </DrawerBody>
+//             </>
+//           )}
+//         </DrawerContent>
+//       </Drawer>
+//     ) : (
+//       <div className="relative">
+//         {isOpen && (
+//           <>
+//             <div>Placeholder for desktop version</div>
+//           </>
+//         )}
+//       </div>
+//     )
+//   );
+// }
 
 export default DateTimePicker; 
