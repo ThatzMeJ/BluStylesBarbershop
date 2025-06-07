@@ -128,8 +128,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       // After successful signup and auto-login, check auth status
       await checkAuthStatus();
-    } catch (err: any) {
-      setError(err.message || 'Signup failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Signup failed');
       setIsAuthenticated(false);
     } finally {
       setLoading(false);
@@ -148,7 +148,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Clear user data after logout
       setUser(null);
       setIsAuthenticated(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Logout error:', err);
       setError('Logout failed');
     } finally {
